@@ -1080,19 +1080,19 @@ websockets = ">=15.0,<16.0"
 
 [[package]]
 name = "openbb-platform-api"
-version = "1.2.2"
+version = "1.2.3"
 description = "OpenBB Platform API: Launch script and widgets builder for the Open Data Platform REST API and Workspace Backend Connector."
 optional = false
 python-versions = "<3.14,>=3.10"
 groups = ["main"]
 files = [
-    {file = "openbb_platform_api-1.2.2-py3-none-any.whl", hash = "sha256:df5d8db50794d2d6e0d58f3496075df28e5280e8dace55704927eec86196d6bc"},
-    {file = "openbb_platform_api-1.2.2.tar.gz", hash = "sha256:a2c50a650ac47ace5db6c4b1e1a7de93dce49cffc2898e3cb8d8e6503ce8abb6"},
+    {file = "openbb_platform_api-1.2.3-py3-none-any.whl", hash = "sha256:201d6fcc21f841a61b9170df9beac585bf4f57a4d59d094b16afc8c628cec191"},
+    {file = "openbb_platform_api-1.2.3.tar.gz", hash = "sha256:9d0997de865eb85f6c4a78d6fa87d3bb0037fb52d61c580d1e8d5443b175c2a8"},
 ]
 
 [package.dependencies]
 deepdiff = ">=8.6.1"
-openbb-core = ">=1.5.6,<2.0.0"
+openbb-core = ">=1.5.7,<2.0.0"
 
 [[package]]
 name = "orderly-set"
@@ -2015,4 +2015,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.14"
-content-hash = "2ac5bd3bea278da87e49aee011ee5accc1b4bcde94003cf43cdd2f9e63c98683"
+content-hash = "d3eba624c614d7e6c98e34c584f3bb23b97c11bc13eac6202cfb6c2f58a437c1"
