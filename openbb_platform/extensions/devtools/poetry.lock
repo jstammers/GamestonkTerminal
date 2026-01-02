@@ -264,7 +264,7 @@ name = "async-timeout"
 version = "5.0.1"
 description = "Timeout context manager for asyncio programs"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["main"]
 markers = "python_version == \"3.10\""
 files = [
@@ -1054,6 +1054,7 @@ description = "Python Git Library"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
+markers = "platform_python_implementation == \"PyPy\" or python_version < \"3.10\""
 files = [
     {file = "dulwich-0.24.10-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:1f511f7afe1f36e37193214e4e069685d7d0378e756cc96a2fcb138bdf9fefca"},
     {file = "dulwich-0.24.10-cp310-cp310-manylinux_2_28_aarch64.whl", hash = "sha256:2a56f9838e5d2414a2b57bab370b73b9803fefd98836ef841f0fd489b5cc1349"},
@@ -1095,6 +1096,61 @@ urllib3 = ">=2.2.2"
 [package.extras]
 colordiff = ["rich"]
 dev = ["codespell (==2.4.1)", "dissolve (>=0.1.1)", "mypy (==1.18.2)", "ruff (==0.13.2)"]
+fastimport = ["fastimport"]
+fuzzing = ["atheris"]
+https = ["urllib3 (>=2.2.2)"]
+merge = ["merge3"]
+paramiko = ["paramiko"]
+patiencediff = ["patiencediff"]
+pgp = ["gpg"]
+
+[[package]]
+name = "dulwich"
+version = "0.24.2"
+description = "Python Git Library"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_python_implementation != \"PyPy\""
+files = [
+    {file = "dulwich-0.24.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:ca6ad94bcaa40153ce195eba4b1f5e58b8861f37c2cd7e017d640412ac3193df"},
+    {file = "dulwich-0.24.2-cp310-cp310-manylinux_2_28_aarch64.whl", hash = "sha256:cd4910747b0ad91b2a0c211a67ba0d45a126b61b2cf7caf32d0eee0e48ab1543"},
+    {file = "dulwich-0.24.2-cp310-cp310-manylinux_2_28_x86_64.whl", hash = "sha256:8e819f801382787164b6b0df0b9020a2d8fe0bdf4ed61e7208149a29fda31c39"},
+    {file = "dulwich-0.24.2-cp310-cp310-win32.whl", hash = "sha256:d25911dbeaef3c3ee32a8e57f4a58fbd62abd644612ac733f8cab707fdd13a04"},
+    {file = "dulwich-0.24.2-cp310-cp310-win_amd64.whl", hash = "sha256:4f85fc7dd8aa4aa1c16e3dcb231270388a0d3c73be2214187a8ddb700300c7ea"},
+    {file = "dulwich-0.24.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:1551656144bf8e815f3ab8f15dfbce5399e8106ee43e4a48218ac41259289718"},
+    {file = "dulwich-0.24.2-cp311-cp311-manylinux_2_28_aarch64.whl", hash = "sha256:823d16592c4bbca3f089a09bb9e656254b6de1b41874309dce3b4df12e68b3fa"},
+    {file = "dulwich-0.24.2-cp311-cp311-manylinux_2_28_x86_64.whl", hash = "sha256:01ee9f1fcfabb6a58df9813b90856943cb1191bd1776c5c133ae03919d943fef"},
+    {file = "dulwich-0.24.2-cp311-cp311-win32.whl", hash = "sha256:bc9314c49a44bfe6925e2619a021f339025d1e8a96ead966fa669dc0250fa254"},
+    {file = "dulwich-0.24.2-cp311-cp311-win_amd64.whl", hash = "sha256:64aab508c9bf9ec93659a15702ee5b046d2be6a1daa7096e6a94d7c887162c2e"},
+    {file = "dulwich-0.24.2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:dd1d9afdf511c167d30dd0f8fef2a0d5e548211644c8cef006e25a531fc0173d"},
+    {file = "dulwich-0.24.2-cp312-cp312-manylinux_2_28_aarch64.whl", hash = "sha256:e918cdd05d03933334542eb7649066ff36f818ca90a9dc2027e1ea28192b74b4"},
+    {file = "dulwich-0.24.2-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:be1cb36f6bf4b335f17b70cabedad3aa3d097364febeaa8531947781612c2a6b"},
+    {file = "dulwich-0.24.2-cp312-cp312-win32.whl", hash = "sha256:fdb3fa61f3b98e6900aa57f73d2c4dd37822c66bb3e61ae3424f620c6353ee76"},
+    {file = "dulwich-0.24.2-cp312-cp312-win_amd64.whl", hash = "sha256:f7992e193d7cb5df1a043e41f0edfc9929c845f68cf7fdf09673d680ffa594ab"},
+    {file = "dulwich-0.24.2-cp313-cp313-android_21_arm64_v8a.whl", hash = "sha256:e237e3724d80be09e8e45f9f9a86342c9c0911ad3fd71fb66f17b20df47c0049"},
+    {file = "dulwich-0.24.2-cp313-cp313-android_21_x86_64.whl", hash = "sha256:8e65c091aacf0d9da167e50f97e203947ae9e439ee8b020915b1decf9ecfdd6d"},
+    {file = "dulwich-0.24.2-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:150b17b30a78c09f105b787ce74ccb094e9a27ada77d25a9df78758b858ee034"},
+    {file = "dulwich-0.24.2-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:540928778a36d468cd98d6d6251af307e9f0743e824fe87189936ca0a88b10fb"},
+    {file = "dulwich-0.24.2-cp313-cp313-manylinux_2_28_x86_64.whl", hash = "sha256:fbc6c4ba4b54919d32ba516ea397008e9d1c4d774b87355c5e0fd320d3d86396"},
+    {file = "dulwich-0.24.2-cp313-cp313-win32.whl", hash = "sha256:bc5452099ecb27970c17f8fede63f426509e7668361b9c7b0f495d498bf67c02"},
+    {file = "dulwich-0.24.2-cp313-cp313-win_amd64.whl", hash = "sha256:09c86b889a344667d050a8e0849816ed2f376d33ec9f8be302129a79ca65845b"},
+    {file = "dulwich-0.24.2-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:316bf497761d349132470b3ad64200ebefd6c545386e35988267d548010b2ce0"},
+    {file = "dulwich-0.24.2-cp39-cp39-manylinux_2_28_aarch64.whl", hash = "sha256:67c888d65c8fbd4da3a60cc718cc543a261d3993cae9274e2f88e34517787a5b"},
+    {file = "dulwich-0.24.2-cp39-cp39-manylinux_2_28_x86_64.whl", hash = "sha256:2d92e1cfbd26bd172e7784be3cd8a32e804223d6655d22139cb0cb87d55c31b0"},
+    {file = "dulwich-0.24.2-cp39-cp39-win32.whl", hash = "sha256:ea489a6c7f009b70d7efcac0a704f08808771f6ea29bddc46c1e85c106ddbb17"},
+    {file = "dulwich-0.24.2-cp39-cp39-win_amd64.whl", hash = "sha256:7e150ad890e842af4659797b932edaf34ee5257414b818a648e013e07e2ca4a7"},
+    {file = "dulwich-0.24.2-py3-none-any.whl", hash = "sha256:07426d209e870bd869d6eefb03573cf4879e62b30f690c53cc525b602ea413e5"},
+    {file = "dulwich-0.24.2.tar.gz", hash = "sha256:d474844cf81bf95a6537a80aeec59d714d5d77d8e83d6d37991e2bde54746ca7"},
+]
+
+[package.dependencies]
+typing_extensions = {version = ">=4.0", markers = "python_version < \"3.12\""}
+urllib3 = ">=2.2.2"
+
+[package.extras]
+colordiff = ["rich"]
+dev = ["codespell (==2.4.1)", "dissolve (>=0.1.1)", "mypy (==1.17.1)", "ruff (==0.12.11)"]
 fastimport = ["fastimport"]
 fuzzing = ["atheris"]
 https = ["urllib3 (>=2.2.2)"]
@@ -1637,6 +1693,9 @@ files = [
     {file = "isort-6.1.0-py3-none-any.whl", hash = "sha256:58d8927ecce74e5087aef019f778d4081a3b6c98f15a80ba35782ca8a2097784"},
     {file = "isort-6.1.0.tar.gz", hash = "sha256:9b8f96a14cfee0677e78e941ff62f03769a06d412aabb9e2a90487b3b7e8d481"},
 ]
+
+[package.dependencies]
+importlib-metadata = {version = ">=4.6.0", markers = "python_version < \"3.10\""}
 
 [package.extras]
 colors = ["colorama"]
