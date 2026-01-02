@@ -980,14 +980,14 @@ files = [
 
 [[package]]
 name = "openbb-core"
-version = "1.5.7"
+version = "1.5.8"
 description = "OpenBB package with core functionality."
 optional = false
 python-versions = "<3.14,>=3.10"
 groups = ["main"]
 files = [
-    {file = "openbb_core-1.5.7-py3-none-any.whl", hash = "sha256:406a4dff46de885be60348cd4256d02631a85320b63b2ba30051f778e4013d89"},
-    {file = "openbb_core-1.5.7.tar.gz", hash = "sha256:5be5b1b6e6910b96afbd38a92ffd74599d8a19e160ff175b63e8f3f1950755ac"},
+    {file = "openbb_core-1.5.8-py3-none-any.whl", hash = "sha256:d82663d28102f7dd8d0b5bf6e0ee770af04e3c4bd8dc6d06eb39d15be2ca12ce"},
+    {file = "openbb_core-1.5.8.tar.gz", hash = "sha256:e5be811aeb0acd03902ba0850d4bfac5a8feb3bc5fd4f36c6ed088dcd3056d2e"},
 ]
 
 [package.dependencies]
@@ -1896,4 +1896,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.14"
-content-hash = "be24681070721fa0f3eec009c802dd00fab73a47bddb73c89567a1847787fb28"
+content-hash = "7e147fa2eec7e0cf35a6a5f1edc21e8a8e23fb05229a8a4caf1c3dba42c53eef"

@@ -10,7 +10,7 @@ packages = [{ include = "openbb", from = "core" }]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.14"
-openbb-core = "^1.5.7"
+openbb-core = "^1.5.8"
 openbb-platform-api = "^1.2.3"
 
 openbb-benzinga = "^1.5.1"
@@ -21,6 +21,7 @@ openbb-econdb = "^1.4.1"
 openbb-federal-reserve = "^1.5.1"
 openbb-fmp = "^1.5.2"
 openbb-fred = "^1.5.1"
+openbb-government-us = "^1.5.2"
 openbb-imf = "^2.0.0"
 openbb-intrinio = "^1.5.1"
 openbb-oecd = "^1.5.1"
@@ -31,7 +32,7 @@ openbb-tradingeconomics = "^1.5.1"
 openbb-us-eia = "^1.2.1"
 openbb-yfinance = "^1.5.2"
 
-openbb-commodity = "^1.4.1"
+openbb-commodity = "^1.4.2"
 openbb-crypto = "^1.5.1"
 openbb-currency = "^1.5.1"
 openbb-derivatives = "^1.5.1"
@@ -52,7 +53,6 @@ openbb-ecb = { version = "^1.5.1", optional = true }
 openbb-famafrench = { version = "^1.1.1", optional = true }
 openbb-finra = { version = "^1.5.1", optional = true }
 openbb-finviz = { version = "^1.4.1", optional = true }
-openbb-government-us = { version = "^1.5.1", optional = true }
 openbb-multpl = { version = "^1.2.1", optional = true }
 openbb-nasdaq = { version = "^1.5.1", optional = true }
 openbb-seeking-alpha = { version = "^1.5.1", optional = true }
@@ -78,7 +78,6 @@ econometrics = ["openbb-econometrics"]
 famafrench = ["openbb-famafrench"]
 finra = ["openbb-finra"]
 finviz = ["openbb-finviz"]
-government_us = ["openbb-government-us"]
 mcp_server = ["openbb-mcp-server"]
 nasdaq = ["openbb-nasdaq"]
 multpl = ["openbb-multpl"]
@@ -102,7 +101,6 @@ all = [
     "openbb-famafrench",
     "openbb-finra",
     "openbb-finviz",
-    "openbb-government-us",
     "openbb-mcp-server",
     "openbb-multpl",
     "openbb-nasdaq",

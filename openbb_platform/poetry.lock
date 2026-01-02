@@ -1226,15 +1226,15 @@ devel = ["colorama", "json-spec", "jsonschema", "pylint", "pytest", "pytest-benc
 
 [[package]]
 name = "fastmcp"
-version = "2.14.1"
+version = "2.14.2"
 description = "The fast, Pythonic way to build MCP servers and clients."
 optional = true
 python-versions = ">=3.10"
 groups = ["main"]
 markers = "extra == \"mcp-server\" or extra == \"all\""
 files = [
-    {file = "fastmcp-2.14.1-py3-none-any.whl", hash = "sha256:fb3e365cc1d52573ab89caeba9944dd4b056149097be169bce428e011f0a57e5"},
-    {file = "fastmcp-2.14.1.tar.gz", hash = "sha256:132725cbf77b68fa3c3d165eff0cfa47e40c1479457419e6a2cfda65bd84c8d6"},
+    {file = "fastmcp-2.14.2-py3-none-any.whl", hash = "sha256:e33cd622e1ebd5110af6a981804525b6cd41072e3c7d68268ed69ef3be651aca"},
+    {file = "fastmcp-2.14.2.tar.gz", hash = "sha256:bd23d1b808b6f446444f10114dac468b11bfb9153ed78628f5619763d0cf573e"},
 ]
 
 [package.dependencies]
@@ -1243,12 +1243,12 @@ cyclopts = ">=4.0.0"
 exceptiongroup = ">=1.2.2"
 httpx = ">=0.28.1"
 jsonschema-path = ">=0.3.4"
-mcp = ">=1.24.0"
+mcp = ">=1.24.0,<2.0"
 openapi-pydantic = ">=0.5.1"
 platformdirs = ">=4.0.0"
 py-key-value-aio = {version = ">=0.3.0,<0.4.0", extras = ["disk", "keyring", "memory"]}
 pydantic = {version = ">=2.11.7", extras = ["email"]}
-pydocket = ">=0.15.5"
+pydocket = ">=0.16.3"
 pyperclip = ">=1.9.0"
 python-dotenv = ">=1.1.0"
 rich = ">=13.9.4"
@@ -3041,18 +3041,18 @@ pywry = ["pywry (>=0.6.2,<0.7.0)"]
 
 [[package]]
 name = "openbb-commodity"
-version = "1.4.1"
+version = "1.4.2"
 description = "Commodity extension for OpenBB"
 optional = false
 python-versions = "<3.14,>=3.10"
 groups = ["main"]
 files = [
-    {file = "openbb_commodity-1.4.1-py3-none-any.whl", hash = "sha256:a6d734957f4ed7704b72f20e1f970598f9e7840ede7b353b24478347bca95df6"},
-    {file = "openbb_commodity-1.4.1.tar.gz", hash = "sha256:3ea24635e3b9e37cb0a36db3dcca886da779bfcada0dae8443b84676f3eb92c4"},
+    {file = "openbb_commodity-1.4.2-py3-none-any.whl", hash = "sha256:f38cb225e4c18f94a99cee8a819dda6afac473c15cbe3017b30032c92e317d4e"},
+    {file = "openbb_commodity-1.4.2.tar.gz", hash = "sha256:c1e119968aa3bf3a677fa9ab4a6f052a6d9271e46281117c1d7957e62bf3f1ce"},
 ]
 
 [package.dependencies]
-openbb-core = ">=1.5.7,<2.0.0"
+openbb-core = ">=1.5.8,<2.0.0"
 
 [[package]]
 name = "openbb-congress-gov"
@@ -3071,14 +3071,14 @@ openbb-core = ">=1.5.7,<2.0.0"
 
 [[package]]
 name = "openbb-core"
-version = "1.5.7"
+version = "1.5.8"
 description = "OpenBB package with core functionality."
 optional = false
 python-versions = "<3.14,>=3.10"
 groups = ["main"]
 files = [
-    {file = "openbb_core-1.5.7-py3-none-any.whl", hash = "sha256:406a4dff46de885be60348cd4256d02631a85320b63b2ba30051f778e4013d89"},
-    {file = "openbb_core-1.5.7.tar.gz", hash = "sha256:5be5b1b6e6910b96afbd38a92ffd74599d8a19e160ff175b63e8f3f1950755ac"},
+    {file = "openbb_core-1.5.8-py3-none-any.whl", hash = "sha256:d82663d28102f7dd8d0b5bf6e0ee770af04e3c4bd8dc6d06eb39d15be2ca12ce"},
+    {file = "openbb_core-1.5.8.tar.gz", hash = "sha256:e5be811aeb0acd03902ba0850d4bfac5a8feb3bc5fd4f36c6ed088dcd3056d2e"},
 ]
 
 [package.dependencies]
@@ -3369,19 +3369,18 @@ openbb-core = ">=1.5.7,<2.0.0"
 
 [[package]]
 name = "openbb-government-us"
-version = "1.5.1"
+version = "1.5.2"
 description = "US Government Data Extension for OpenBB"
-optional = true
+optional = false
 python-versions = "<3.14,>=3.10"
 groups = ["main"]
-markers = "extra == \"government-us\" or extra == \"all\""
 files = [
-    {file = "openbb_government_us-1.5.1-py3-none-any.whl", hash = "sha256:9d6be7cf7468fea46c7620e735e79ed43ddb41437458d9314da90805f13deedb"},
-    {file = "openbb_government_us-1.5.1.tar.gz", hash = "sha256:27396700766459129be1974405db9e67330d56c8a4cac0863a66931c8884ec31"},
+    {file = "openbb_government_us-1.5.2-py3-none-any.whl", hash = "sha256:de53aa7726cdf4e099a0dcab73d09d97045c7cd3ba4f523aeed89ec395df602e"},
+    {file = "openbb_government_us-1.5.2.tar.gz", hash = "sha256:34d899c56660625075b8c1780bdef4f8218cc9218c33a7c0b233cbf1778c5d7a"},
 ]
 
 [package.dependencies]
-openbb-core = ">=1.5.7,<2.0.0"
+openbb-core = ">=1.5.8,<2.0.0"
 random-user-agent = ">=1.0.1,<2.0.0"
 
 [[package]]
@@ -4930,10 +4929,9 @@ files = [
 name = "random-user-agent"
 version = "1.0.1"
 description = "A package to get random user agents based filters provided by user"
-optional = true
+optional = false
 python-versions = "*"
 groups = ["main"]
-markers = "extra == \"government-us\" or extra == \"all\" or extra == \"nasdaq\" or extra == \"tmx\""
 files = [
     {file = "random_user_agent-1.0.1-py3-none-any.whl", hash = "sha256:535636a55fb63fe3d74fd0260d854c241d9f2946447026464e578e68eac17dac"},
     {file = "random_user_agent-1.0.1.tar.gz", hash = "sha256:8f8ca26ec8cb1d24ad1758d8b8f700d154064d641dbe9a255cfec42960fbd012"},
@@ -5651,15 +5649,15 @@ files = [
 
 [[package]]
 name = "sse-starlette"
-version = "3.1.1"
+version = "3.1.2"
 description = "SSE plugin for Starlette"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
 markers = "extra == \"mcp-server\" or extra == \"all\""
 files = [
-    {file = "sse_starlette-3.1.1-py3-none-any.whl", hash = "sha256:bb38f71ae74cfd86b529907a9fda5632195dfa6ae120f214ea4c890c7ee9d436"},
-    {file = "sse_starlette-3.1.1.tar.gz", hash = "sha256:bffa531420c1793ab224f63648c059bcadc412bf9fdb1301ac8de1cf9a67b7fb"},
+    {file = "sse_starlette-3.1.2-py3-none-any.whl", hash = "sha256:cd800dd349f4521b317b9391d3796fa97b71748a4da9b9e00aafab32dda375c8"},
+    {file = "sse_starlette-3.1.2.tar.gz", hash = "sha256:55eff034207a83a0eb86de9a68099bd0157838f0b8b999a1b742005c71e33618"},
 ]
 
 [package.dependencies]
@@ -6432,7 +6430,7 @@ test = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more_it
 type = ["pytest-mypy"]
 
 [extras]
-all = ["openbb-alpha-vantage", "openbb-biztoc", "openbb-cboe", "openbb-charting", "openbb-deribit", "openbb-ecb", "openbb-econometrics", "openbb-famafrench", "openbb-finra", "openbb-finviz", "openbb-government-us", "openbb-mcp-server", "openbb-multpl", "openbb-nasdaq", "openbb-quantitative", "openbb-seeking-alpha", "openbb-stockgrid", "openbb-technical", "openbb-tmx", "openbb-tradier", "openbb-wsj"]
+all = ["openbb-alpha-vantage", "openbb-biztoc", "openbb-cboe", "openbb-charting", "openbb-deribit", "openbb-ecb", "openbb-econometrics", "openbb-famafrench", "openbb-finra", "openbb-finviz", "openbb-mcp-server", "openbb-multpl", "openbb-nasdaq", "openbb-quantitative", "openbb-seeking-alpha", "openbb-stockgrid", "openbb-technical", "openbb-tmx", "openbb-tradier", "openbb-wsj"]
 alpha-vantage = ["openbb-alpha-vantage"]
 biztoc = ["openbb-biztoc"]
 cboe = ["openbb-cboe"]
@@ -6443,7 +6441,6 @@ econometrics = ["openbb-econometrics"]
 famafrench = ["openbb-famafrench"]
 finra = ["openbb-finra"]
 finviz = ["openbb-finviz"]
-government-us = ["openbb-government-us"]
 mcp-server = ["openbb-mcp-server"]
 multpl = ["openbb-multpl"]
 nasdaq = ["openbb-nasdaq"]
@@ -6458,4 +6455,4 @@ wsj = ["openbb-wsj"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.14"
-content-hash = "7a37b527c7b279110a2306d0f366ea91c00156b98ae71de6813d03702a3ea2e1"
+content-hash = "d066c127872716537f2a2e1a49c3f48a811d32782e5a7497cabd9842aa2daea6"
