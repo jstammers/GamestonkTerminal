@@ -2,7 +2,7 @@
 
 # pylint: disable=unused-argument,too-many-arguments,too-many-branches,too-many-locals,too-many-statements
 
-from typing import TYPE_CHECKING, Any, Literal, Optional, Union
+from typing import TYPE_CHECKING, Any, Literal, Union
 
 from openbb_core.provider.utils.errors import EmptyDataError
 from openbb_yfinance.utils.references import INTERVALS, MONTHS, PERIODS
@@ -77,22 +77,16 @@ SCREENER_FIELDS = [
 
 async def get_custom_screener(
     body: dict[str, Any],
-    limit: Optional[int] = None,
+    limit: int | None = None,
     region: str = "US",
 ):
     """Get a custom screener."""
     # pylint: disable=import-outside-toplevel
     from openbb_core.provider.utils.helpers import (  # noqa
-        get_requests_session,
         safe_fromtimestamp,
     )
-    from curl_adapter import CurlCffiAdapter
     from pytz import timezone
     from yfinance.data import YfData
-
-    session = get_requests_session()
-    session.mount("https://", CurlCffiAdapter())
-    session.mount("http://", CurlCffiAdapter())
 
     params_dict = {
         "corsDomain": "finance.yahoo.com",
@@ -100,7 +94,7 @@ async def get_custom_screener(
         "lang": "en-US",
         "region": region,
     }
-    _data = YfData(session=session)
+    _data = YfData()
     results: list = []
     body = body.copy()
     response = _data.post(
@@ -137,9 +131,7 @@ async def get_custom_screener(
     for item in results:
         tz = item["exchangeTimezoneName"]
         earnings_date = (
-            safe_fromtimestamp(item["earningsTimestamp"], timezone(tz)).strftime(  # type: ignore
-                "%Y-%m-%d %H:%M:%S%z"
-            )
+            safe_fromtimestamp(item["earningsTimestamp"], timezone(tz)).strftime("%Y-%m-%d %H:%M:%S%z")  # type: ignore
             if item.get("earningsTimestamp")
             else None
         )
@@ -152,16 +144,14 @@ async def get_custom_screener(
 
 
 async def get_defined_screener(
-    name: Optional[str] = None,
-    body: Optional[dict[str, Any]] = None,
-    limit: Optional[int] = None,
+    name: str | None = None,
+    body: dict[str, Any] | None = None,
+    limit: int | None = None,
 ):
     """Get a predefined screener."""
     # pylint: disable=import-outside-toplevel
     import yfinance as yf  # noqa
-    from curl_adapter import CurlCffiAdapter
     from openbb_core.provider.utils.helpers import (
-        get_requests_session,
         safe_fromtimestamp,
     )
     from pytz import timezone
@@ -172,15 +162,11 @@ async def get_defined_screener(
         )
 
     results: list = []
-    session = get_requests_session()
-    session.mount("https://", CurlCffiAdapter())
-    session.mount("http://", CurlCffiAdapter())
 
     offset = 0
 
     response = yf.screen(
         name,
-        session=session,
         size=250,
         offset=offset,
     )
@@ -197,7 +183,6 @@ async def get_defined_screener(
         offset = len(results)
         res = yf.screen(
             name,
-            session=session,
             size=250,
             offset=offset,
         )
@@ -217,9 +202,7 @@ async def get_defined_screener(
         symbols.add(sym)
         tz = item["exchangeTimezoneName"]
         earnings_date = (
-            safe_fromtimestamp(item["earningsTimestamp"], timezone(tz)).strftime(  # type: ignore
-                "%Y-%m-%d %H:%M:%S%z"
-            )
+            safe_fromtimestamp(item["earningsTimestamp"], timezone(tz)).strftime("%Y-%m-%d %H:%M:%S%z")  # type: ignore
             if item.get("earningsTimestamp")
             else None
         )
@@ -254,19 +237,13 @@ def get_futures_data() -> "DataFrame":
 def get_futures_symbols(symbol: str) -> list:
     """Get the list of futures symbols from the continuation symbol."""
     # pylint: disable=import-outside-toplevel
-    from openbb_core.provider.utils.helpers import get_requests_session  # noqa
-    from curl_adapter import CurlCffiAdapter
     from yfinance.data import YfData
 
     _symbol = symbol.upper() + "%3DF"
     URL = f"https://query2.finance.yahoo.com/v10/finance/quoteSummary/{_symbol}"
     params = {"modules": "futuresChain"}
 
-    session = get_requests_session()
-    session.mount("https://", CurlCffiAdapter())
-    session.mount("http://", CurlCffiAdapter())
-
-    response: dict = YfData(session=session).get_raw_json(url=URL, params=params)
+    response: dict = YfData().get_raw_json(url=URL, params=params)
     futures_symbols: list = []
 
     if "quoteSummary" in response:
@@ -338,7 +315,7 @@ async def get_historical_futures_prices(
 
 
 async def get_futures_curve(  # pylint: disable=too-many-return-statements
-    symbol: str, date: Optional[Union[str, list]] = None
+    symbol: str, date: str | list | None = None
 ) -> "DataFrame":
     """Get the futures curve for a given symbol.
 
@@ -385,11 +362,7 @@ async def get_futures_curve(  # pylint: disable=too-many-return-statements
         dates_list = DatetimeIndex(dates)
         symbols = df.symbol.unique().tolist()
         expiration_dict = {symbol: get_expiration_month(symbol) for symbol in symbols}
-        df = (
-            df.reset_index()
-            .pivot(columns="symbol", values="close", index="date")  # type: ignore
-            .copy()
-        )
+        df = df.reset_index().pivot(columns="symbol", values="close", index="date").copy()  # type: ignore
         df = df.rename(columns=expiration_dict)
         df.columns.name = "expiration"
 
@@ -425,11 +398,7 @@ async def get_futures_curve(  # pylint: disable=too-many-return-statements
 
         futures_data = get_futures_data()
         try:
-            exchange = futures_data[futures_data["Ticker"] == symbol][
-                "Exchange"
-            ].values[  # type: ignore
-                0
-            ]
+            exchange = futures_data[futures_data["Ticker"] == symbol]["Exchange"].values[0]  # type: ignore
         except IndexError as exc:
             raise ValueError(f"Symbol {symbol} was not found.") from exc
 
@@ -510,10 +479,10 @@ async def get_futures_curve(  # pylint: disable=too-many-return-statements
 
 def yf_download(  # pylint: disable=too-many-positional-arguments
     symbol: str,
-    start_date: Optional[Union[str, "date"]] = None,
-    end_date: Optional[Union[str, "date"]] = None,
+    start_date: Union[str, "date"] | None = None,
+    end_date: Union[str, "date"] | None = None,
     interval: INTERVALS = "1d",
-    period: Optional[PERIODS] = None,
+    period: PERIODS | None = None,
     prepost: bool = False,
     actions: bool = False,
     progress: bool = False,
@@ -528,8 +497,6 @@ def yf_download(  # pylint: disable=too-many-positional-arguments
     """Get yFinance OHLC data for any ticker and interval available."""
     # pylint: disable=import-outside-toplevel
     from datetime import datetime, timedelta  # noqa
-    from curl_adapter import CurlCffiAdapter
-    from openbb_core.provider.utils.helpers import get_requests_session
     from pandas import DataFrame, concat, to_datetime
     import yfinance as yf
 
@@ -553,12 +520,13 @@ def yf_download(  # pylint: disable=too-many-positional-arguments
     if adjusted is False:
         kwargs.update(dict(auto_adjust=False, back_adjust=False, period=period))
 
-    session = kwargs.pop("session", None) or get_requests_session()
-    session.mount("https://", CurlCffiAdapter())
-    session.mount("http://", CurlCffiAdapter())
-
-    if session.proxies:
+    # Note: Proxy support via kwargs["proxy"] is preserved if provided.
+    # yfinance>=0.2.66 manages its own curl_cffi sessions internally.
+    # If a session was passed in kwargs, extract proxy info before removing it.
+    session = kwargs.pop("session", None)
+    if session and hasattr(session, "proxies") and session.proxies:
         kwargs["proxy"] = session.proxies
+
     try:
         data = yf.download(
             tickers=symbol,
@@ -574,7 +542,6 @@ def yf_download(  # pylint: disable=too-many-positional-arguments
             rounding=rounding,
             group_by=group_by,
             threads=False,
-            session=session,
             **kwargs,
         )
         if hasattr(data.index, "tz") and data.index.tz is not None:
@@ -612,16 +579,10 @@ def yf_download(  # pylint: disable=too-many-positional-arguments
     if start_date is not None:
         data = data[data["date"] >= to_datetime(start_date)]  # type: ignore
     if (
-        end_date is not None
-        and start_date is not None
-        and to_datetime(end_date) > to_datetime(start_date)  # type: ignore
+        end_date is not None and start_date is not None and to_datetime(end_date) > to_datetime(start_date)  # type: ignore
     ):
         data = data[
-            data["date"]
-            <= (
-                to_datetime(end_date)  # type: ignore
-                + timedelta(days=1 if intraday is True else 0)
-            )
+            data["date"] <= (to_datetime(end_date) + timedelta(days=1 if intraday is True else 0))  # type: ignore
         ]
     if intraday is True:
         data["date"] = data["date"].dt.strftime("%Y-%m-%d %H:%M:%S")  # type: ignore

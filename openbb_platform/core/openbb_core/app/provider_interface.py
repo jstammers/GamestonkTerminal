@@ -1,18 +1,16 @@
 """Provider Interface."""
 
+from collections.abc import Callable
 from dataclasses import dataclass, make_dataclass
 from difflib import SequenceMatcher
 from typing import (
     Annotated,
     Any,
-    Callable,
-    Dict,
-    List,
     Literal,
     Optional,
-    Tuple,
-    Type,
     Union,
+    get_args,
+    get_origin,
 )
 
 from fastapi import Body, Query
@@ -32,7 +30,7 @@ from pydantic import (
 )
 from pydantic.fields import FieldInfo
 
-TupleFieldType = Tuple[str, Optional[Type], Optional[Any]]
+TupleFieldType = tuple[str, type | None, Any | None]
 
 
 @dataclass
@@ -40,8 +38,8 @@ class DataclassField:
     """Dataclass field."""
 
     name: str
-    annotation: Optional[Type]
-    default: Optional[Any]
+    annotation: type | None
+    default: Any | None
 
 
 @dataclass
@@ -99,8 +97,8 @@ class ProviderInterface(metaclass=SingletonMeta):
 
     def __init__(
         self,
-        registry_map: Optional[RegistryMap] = None,
-        query_executor: Optional[QueryExecutor] = None,
+        registry_map: RegistryMap | None = None,
+        query_executor: QueryExecutor | None = None,
     ) -> None:
         """Initialize provider interface."""
         self._registry_map = registry_map or RegistryMap()
@@ -125,32 +123,32 @@ class ProviderInterface(metaclass=SingletonMeta):
         return self._map
 
     @property
-    def credentials(self) -> Dict[str, List[str]]:
+    def credentials(self) -> dict[str, list[str]]:
         """Map providers to credentials."""
         return self._registry_map.credentials
 
     @property
-    def model_providers(self) -> Dict[str, ProviderChoices]:
+    def model_providers(self) -> dict[str, ProviderChoices]:
         """Dictionary of provider choices by model."""
         return self._model_providers_map
 
     @property
-    def params(self) -> Dict[str, Dict[str, Union[StandardParams, ExtraParams]]]:
+    def params(self) -> dict[str, dict[str, StandardParams | ExtraParams]]:
         """Dictionary of params by model."""
         return self._params
 
     @property
-    def data(self) -> Dict[str, Dict[str, Union[StandardData, ExtraData]]]:
+    def data(self) -> dict[str, dict[str, StandardData | ExtraData]]:
         """Dictionary of data by model."""
         return self._data
 
     @property
-    def return_schema(self) -> Dict[str, Type[BaseModel]]:
+    def return_schema(self) -> dict[str, type[BaseModel]]:
         """Dictionary of data by model merged."""
         return self._return_schema
 
     @property
-    def available_providers(self) -> List[str]:
+    def available_providers(self) -> list[str]:
         """List of available providers."""
         return self._available_providers
 
@@ -160,12 +158,12 @@ class ProviderInterface(metaclass=SingletonMeta):
         return self._provider_choices
 
     @property
-    def models(self) -> List[str]:
+    def models(self) -> list[str]:
         """List of model names."""
         return self._registry_map.models
 
     @property
-    def return_annotations(self) -> Dict[str, Type[OBBject]]:
+    def return_annotations(self) -> dict[str, type[OBBject]]:
         """Return map."""
         return self._return_annotations
 
@@ -179,19 +177,22 @@ class ProviderInterface(metaclass=SingletonMeta):
     ) -> DataclassField:
         """Merge 2 dataclass fields."""
         curr_name = current.name
-        curr_type: Optional[Type] = current.annotation
+        curr_type: type | None = current.annotation
         curr_desc = getattr(current.default, "description", "")
         curr_json_schema_extra = getattr(current.default, "json_schema_extra", {})
 
-        inc_type: Optional[Type] = incoming.annotation
+        inc_type: type | None = incoming.annotation
         inc_desc = getattr(incoming.default, "description", "")
         inc_json_schema_extra = getattr(incoming.default, "json_schema_extra", {})
 
         def split_desc(desc: str) -> str:
-            """Split field description."""
+            """Split field description, removing provider tags and multiple items text."""
             item = desc.split(" (provider: ")
             detail = item[0] if item else ""
-            return detail
+            # Also remove "Multiple comma separated items allowed." for comparison
+            detail = detail.replace(" Multiple comma separated items allowed.", "")
+            detail = detail.replace("Multiple comma separated items allowed.", "")
+            return detail.strip()
 
         def merge_json_schema_extra(curr: dict, inc: dict) -> dict:
             """Merge json schema extra."""
@@ -214,10 +215,12 @@ class ProviderInterface(metaclass=SingletonMeta):
         curr_detail = split_desc(curr_desc)
         inc_detail = split_desc(inc_desc)
 
-        curr_title = getattr(current.default, "title", "")
-        inc_title = getattr(incoming.default, "title", "")
-        providers = ",".join([curr_title, inc_title])
-        formatted_prov = providers.replace(",", ", ")
+        curr_title = getattr(current.default, "title", "") or ""
+        inc_title = getattr(incoming.default, "title", "") or ""
+        # Filter out empty titles and join
+        provider_list = [t for t in [curr_title, inc_title] if t]
+        providers = ",".join(provider_list)
+        formatted_prov = ", ".join(provider_list)
 
         if SequenceMatcher(None, curr_detail, inc_detail).ratio() > 0.8:
             new_desc = f"{curr_detail} (provider: {formatted_prov})"
@@ -232,10 +235,8 @@ class ProviderInterface(metaclass=SingletonMeta):
             json_schema_extra=json_schema_extra,
         )
 
-        merged_type: Optional[Type] = (
-            Union[curr_type, inc_type]  # type: ignore[assignment]
-            if curr_type != inc_type
-            else curr_type
+        merged_type: type | None = (
+            Union[curr_type, inc_type] if curr_type != inc_type else curr_type  # type: ignore[assignment]  # noqa
         )
 
         return DataclassField(curr_name, merged_type, merged_default)
@@ -244,7 +245,7 @@ class ProviderInterface(metaclass=SingletonMeta):
     def _create_field(
         name: str,
         field: FieldInfo,
-        provider_name: Optional[str] = None,
+        provider_name: str | None = None,
         query: bool = False,
         force_optional: bool = False,
     ) -> DataclassField:
@@ -252,9 +253,9 @@ class ProviderInterface(metaclass=SingletonMeta):
         annotation = field.annotation
 
         additional_description = ""
-        choices: Dict = {}
+        choices: dict = {}
         if extra := field.json_schema_extra:
-            providers: List = []
+            providers: list = []
             for p, v in extra.items():  # type: ignore
                 if isinstance(v, dict) and v.get("multiple_items_allowed"):
                     providers.append(p)
@@ -295,7 +296,7 @@ class ProviderInterface(metaclass=SingletonMeta):
 
         if field.is_required():
             if force_optional:
-                annotation = Optional[annotation]  # type: ignore
+                annotation = Optional[annotation]  # type: ignore  # noqa
                 default = None
             else:
                 default = ...
@@ -351,10 +352,13 @@ class ProviderInterface(metaclass=SingletonMeta):
     def _extract_params(
         cls,
         providers: Any,
-    ) -> Tuple[Dict[str, TupleFieldType], Dict[str, TupleFieldType]]:
+    ) -> tuple[dict[str, TupleFieldType], dict[str, TupleFieldType]]:
         """Extract parameters from map."""
-        standard: Dict[str, TupleFieldType] = {}
-        extra: Dict[str, TupleFieldType] = {}
+        standard: dict[str, TupleFieldType] = {}
+        extra: dict[str, TupleFieldType] = {}
+        standard_fields = (
+            providers.get("openbb", {}).get("QueryParams", {}).get("fields", {})
+        )
 
         for provider_name, model_details in providers.items():
             if provider_name == "openbb":
@@ -368,8 +372,36 @@ class ProviderInterface(metaclass=SingletonMeta):
                     )
             else:
                 for name, field in model_details["QueryParams"]["fields"].items():
-                    if name not in providers["openbb"]["QueryParams"]["fields"]:
-                        s_name = to_snake_case(name)
+                    s_name = to_snake_case(name)
+
+                    if name in standard_fields:
+                        # Provider redefines a standard field - merge descriptions
+                        # Check if descriptions differ before merging
+                        standard_desc = standard_fields[name].description or ""
+                        provider_desc = field.description or ""
+
+                        if provider_desc and provider_desc != standard_desc:
+                            # Create a field with provider-specific description
+                            incoming = cls._create_field(
+                                s_name,
+                                field,
+                                provider_name,
+                                query=True,
+                                force_optional=False,
+                            )
+                            # Merge into the standard field
+                            if s_name in standard:
+                                current = DataclassField(*standard[s_name])
+                                updated = cls._merge_fields(
+                                    current, incoming, query=True
+                                )
+                                standard[s_name] = (
+                                    updated.name,
+                                    updated.annotation,
+                                    updated.default,
+                                )
+                    else:
+                        # Extra field not in standard - add to extra params
                         incoming = cls._create_field(
                             s_name,
                             field,
@@ -396,9 +428,9 @@ class ProviderInterface(metaclass=SingletonMeta):
     def _extract_data(
         cls,
         providers: Any,
-    ) -> Tuple[Dict[str, TupleFieldType], Dict[str, TupleFieldType]]:
-        standard: Dict[str, TupleFieldType] = {}
-        extra: Dict[str, TupleFieldType] = {}
+    ) -> tuple[dict[str, TupleFieldType], dict[str, TupleFieldType]]:
+        standard: dict[str, TupleFieldType] = {}
+        extra: dict[str, TupleFieldType] = {}
 
         for provider_name, model_details in providers.items():
             if provider_name == "openbb":
@@ -446,7 +478,7 @@ class ProviderInterface(metaclass=SingletonMeta):
 
     def _generate_params_dc(
         self, map_: MapType
-    ) -> Dict[str, Dict[str, Union[StandardParams, ExtraParams]]]:
+    ) -> dict[str, dict[str, StandardParams | ExtraParams]]:
         """Generate dataclasses for params.
 
         This creates a dictionary of dataclasses that can be injected as a FastAPI
@@ -466,7 +498,7 @@ class ProviderInterface(metaclass=SingletonMeta):
             ...
             sort: str = Query(default=None, title="benzinga,polygon")
         """
-        result: Dict = {}
+        result: dict = {}
 
         for model_name, providers in map_.items():
             standard: dict
@@ -487,7 +519,7 @@ class ProviderInterface(metaclass=SingletonMeta):
             }
         return result
 
-    def _generate_model_providers_dc(self, map_: MapType) -> Dict[str, ProviderChoices]:
+    def _generate_model_providers_dc(self, map_: MapType) -> dict[str, ProviderChoices]:
         """Generate dataclasses for provider choices by model.
 
         This creates a dictionary that maps model names to dataclasses that can be
@@ -499,7 +531,7 @@ class ProviderInterface(metaclass=SingletonMeta):
         class CompanyNews(ProviderChoices):
             provider: Literal["benzinga", "polygon"]
         """
-        result: Dict = {}
+        result: dict = {}
 
         for model_name, providers in map_.items():
             choices = sorted(list(providers.keys()))
@@ -522,7 +554,7 @@ class ProviderInterface(metaclass=SingletonMeta):
 
     def _generate_data_dc(
         self, map_: MapType
-    ) -> Dict[str, Dict[str, Union[StandardData, ExtraData]]]:
+    ) -> dict[str, dict[str, StandardData | ExtraData]]:
         """Generate dataclasses for data.
 
         This creates a dictionary of dataclasses.
@@ -538,7 +570,7 @@ class ProviderInterface(metaclass=SingletonMeta):
             adj_close: Optional[PositiveFloat]
             volume: PositiveFloat
         """
-        result: Dict = {}
+        result: dict = {}
 
         for model_name, providers in map_.items():
             standard: dict
@@ -561,10 +593,10 @@ class ProviderInterface(metaclass=SingletonMeta):
 
     def _generate_return_schema(
         self,
-        data: Dict[str, Dict[str, Union[StandardData, ExtraData]]],
-    ) -> Dict[str, Type[BaseModel]]:
+        data: dict[str, dict[str, StandardData | ExtraData]],
+    ) -> dict[str, type[BaseModel]]:
         """Merge standard data with extra data into a single BaseModel to be injected as FastAPI dependency."""
-        result: Dict = {}
+        result: dict = {}
         for model_name, dataclasses in data.items():
             standard = dataclasses["standard"]
             extra = dataclasses["extra"]
@@ -572,7 +604,7 @@ class ProviderInterface(metaclass=SingletonMeta):
             fields = standard.model_fields.copy()
             fields.update(extra.model_fields)
 
-            fields_dict: Dict[str, Tuple[Any, Any]] = {}
+            fields_dict: dict[str, tuple[Any, Any]] = {}
 
             for name, field in fields.items():
                 fields_dict[name] = (
@@ -596,16 +628,37 @@ class ProviderInterface(metaclass=SingletonMeta):
 
         return result
 
-    def _get_provider_choices(self, available_providers: List[str]) -> type:
+    def _get_provider_choices(self, available_providers: list[str]) -> type:
         return make_dataclass(
             cls_name="ProviderChoices",
             fields=[("provider", Literal[tuple(available_providers)])],  # type: ignore
             bases=(ProviderChoices,),
         )
 
+    def _get_annotated_union(self, models: dict[str, Any]) -> Any:
+        """Get annotated union."""
+
+        def get_provider(v: type[BaseModel]):
+            """Callable to discriminate which BaseModel to use."""
+            return getattr(v, "_provider", None)
+
+        args = set()
+        for provider, model in models.items():
+            data = model["data"]
+            # We set the provider to use it in discriminator function
+            setattr(data, "_provider", provider)
+            if get_origin(data) is Annotated:
+                metadata = data.__metadata__ + (Tag(provider),)
+                annotated_args = (get_args(data)[0],) + metadata
+                args.add(Annotated[annotated_args])
+            else:
+                args.add(Annotated[data, Tag(provider)])
+        meta = Discriminator(get_provider) if len(args) > 1 else None
+        return SerializeAsAny[Annotated[Union[tuple(args)], meta]]  # type: ignore  # noqa
+
     def _generate_return_annotations(
-        self, original_models: Dict[str, Dict[str, Any]]
-    ) -> Dict[str, Type[OBBject]]:
+        self, original_models: dict[str, dict[str, Any]]
+    ) -> dict[str, type[OBBject]]:
         """Generate return annotations for FastAPI.
 
         Example
@@ -635,27 +688,14 @@ class ProviderInterface(metaclass=SingletonMeta):
                 ]
             ]
         """
-
-        def get_provider(v: Type[BaseModel]):
-            """Callable to discriminate which BaseModel to use."""
-            return getattr(v, "_provider", None)
-
         annotations = {}
         for name, models in original_models.items():
-            outer = set()
-            args = set()
-            for provider, model in models.items():
-                data = model["data"]
-                outer.add(model["results_type"])
-                args.add(Annotated[data, Tag(provider)])
-                # We set the provider to use it in discriminator function
-                setattr(data, "_provider", provider)
-            meta = Discriminator(get_provider) if len(args) > 1 else None
-            inner = SerializeAsAny[Annotated[Union[tuple(args)], meta]]  # type: ignore[misc,valid-type]
-            full = Union[tuple((o[inner] if o else inner) for o in outer)]  # type: ignore[valid-type,misc]
+            outer = {model["results_type"] for model in models.values()}
+            inner = self._get_annotated_union(models)
+            full = Union[tuple((o[inner] if o else inner) for o in outer)]  # type: ignore  # noqa
             annotations[name] = create_model(
                 f"OBBject_{name}",
-                __base__=OBBject[full],  # type: ignore[valid-type]
+                __base__=OBBject[full],  # type: ignore
                 __doc__=f"OBBject with results of type {name}",
             )
         return annotations

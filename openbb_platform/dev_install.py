@@ -17,7 +17,7 @@ CLI_LOCK = CLI_PATH / "poetry.lock"
 
 LOCAL_DEPS = """
 [tool.poetry.dependencies]
-python = ">=3.9.21,<3.14"
+python = ">=3.10,<3.14"
 openbb-devtools = { path = "./extensions/devtools", develop = true, markers = "python_version >= '3.10'" }
 openbb-core = { path = "./core", develop = true }
 openbb-platform-api = { path = "./extensions/platform_api", develop = true }
@@ -30,6 +30,7 @@ openbb-econdb = { path = "./providers/econdb", develop = true }
 openbb-federal-reserve = { path = "./providers/federal_reserve", develop = true }
 openbb-fmp = { path = "./providers/fmp", develop = true }
 openbb-fred = { path = "./providers/fred", develop = true }
+openbb-government-us = { path = "./providers/government_us", develop = true }
 openbb-imf = { path = "./providers/imf", develop = true }
 openbb-intrinio = { path = "./providers/intrinio", develop = true }
 openbb-oecd = { path = "./providers/oecd", develop = true }
@@ -62,7 +63,6 @@ openbb-ecb = { path = "./providers/ecb", optional = true, develop = true }
 openbb-famafrench = { path = "./providers/famafrench", optional = true, develop = true }
 openbb-finra = { path = "./providers/finra", optional = true, develop = true }
 openbb-finviz = { path = "./providers/finviz", optional = true, develop = true }
-openbb-government-us = { path = "./providers/government_us", optional = true, develop = true }
 openbb-multpl = { path = "./providers/multpl", optional = true, develop = true }
 openbb-nasdaq = { path = "./providers/nasdaq", optional = true, develop = true }
 openbb-seeking-alpha = { path = "./providers/seeking_alpha", optional = true, develop = true }
@@ -113,8 +113,8 @@ def get_all_dev_dependencies():
 
 def install_platform_local(_extras: bool = False):
     """Install the Platform locally for development purposes."""
-    original_lock = LOCK.read_text()
-    original_pyproject = PYPROJECT.read_text()
+    original_lock = LOCK.read_text(encoding="utf-8")
+    original_pyproject = PYPROJECT.read_text(encoding="utf-8")
 
     local_deps = loads(LOCAL_DEPS).get("tool", {}).get("poetry", {})["dependencies"]
     with open(PYPROJECT) as f:
@@ -122,14 +122,6 @@ def install_platform_local(_extras: bool = False):
     pyproject_toml.get("tool", {}).get("poetry", {}).get("dependencies", {}).update(
         local_deps
     )
-
-    # Extract and add devtools dependencies manually if Python version is 3.9
-    if sys.version_info[:2] == (3, 9):
-        devtools_deps = extract_dependencies(Path("./extensions/devtools"), dev=False)
-        devtools_deps.remove("python")
-        pyproject_toml.get("tool", {}).get("poetry", {}).get("dependencies", {}).update(
-            devtools_deps
-        )
 
     if _extras:
         dev_dependencies = get_all_dev_dependencies()
@@ -150,7 +142,7 @@ def install_platform_local(_extras: bool = False):
         extras_args = ["-E", "all"] if _extras else []
 
         subprocess.run(
-            CMD + ["lock"],
+            CMD + ["lock", "--regenerate"],
             cwd=PLATFORM_PATH,
             check=True,
         )
@@ -175,8 +167,8 @@ def install_platform_local(_extras: bool = False):
 
 def install_platform_cli():
     """Install the CLI locally for development purposes."""
-    original_lock = CLI_LOCK.read_text()
-    original_pyproject = CLI_PYPROJECT.read_text()
+    original_lock = CLI_LOCK.read_text(encoding="utf-8")
+    original_pyproject = CLI_PYPROJECT.read_text(encoding="utf-8")
 
     with open(CLI_PYPROJECT) as f:
         pyproject_toml = load(f)
@@ -195,7 +187,7 @@ def install_platform_cli():
         CMD = [sys.executable, "-m", "poetry"]
 
         subprocess.run(
-            CMD + ["lock"],
+            CMD + ["lock", "--regenerate"],
             cwd=CLI_PATH,
             check=True,  # noqa: S603
         )

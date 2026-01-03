@@ -1,7 +1,6 @@
 """Unit tests for ToolRegistry."""
 
 # pylint: disable=redefined-outer-name
-import sys
 from unittest.mock import MagicMock
 
 import pytest
@@ -9,10 +8,6 @@ from fastmcp.server.openapi import OpenAPITool
 from fastmcp.utilities.openapi import HTTPRoute
 from openbb_mcp_server.models.registry import ToolRegistry
 from openbb_mcp_server.models.tools import ToggleResult
-
-# Skip all tests if Python version < 3.10
-if sys.version_info < (3, 10):
-    pytest.skip("MCP server requires Python 3.10+", allow_module_level=True)
 
 
 @pytest.fixture
@@ -29,6 +24,7 @@ def test_register_tool(tool_registry):
         name="test_tool",
         description="Test",
         parameters={},
+        director=MagicMock(),
     )
     tool_registry.register_tool(
         category="test_cat", subcategory="test_sub", tool_name="test_tool", tool=tool
@@ -47,6 +43,7 @@ def test_get_categories(tool_registry):
         name="tool1",
         description="Tool1",
         parameters={},
+        director=MagicMock(),
     )
     tool2 = OpenAPITool(
         MagicMock(),
@@ -54,6 +51,7 @@ def test_get_categories(tool_registry):
         name="tool2",
         description="Tool2",
         parameters={},
+        director=MagicMock(),
     )
 
     tool_registry.register_tool(
@@ -77,6 +75,7 @@ def test_get_category_tools(tool_registry):
         name="tool1",
         description="Tool1",
         parameters={},
+        director=MagicMock(),
     )
     tool2 = OpenAPITool(
         MagicMock(),
@@ -84,6 +83,7 @@ def test_get_category_tools(tool_registry):
         name="tool2",
         description="Tool2",
         parameters={},
+        director=MagicMock(),
     )
     tool3 = OpenAPITool(
         MagicMock(),
@@ -91,6 +91,7 @@ def test_get_category_tools(tool_registry):
         name="tool3",
         description="Tool3",
         parameters={},
+        director=MagicMock(),
     )
 
     tool_registry.register_tool(
@@ -123,6 +124,7 @@ def test_get_tool(tool_registry):
         name="test",
         description="Test",
         parameters={},
+        director=MagicMock(),
     )
     tool_registry.register_tool(
         category="cat", subcategory="sub", tool_name="test", tool=tool
@@ -140,6 +142,7 @@ def test_get_category_subcategories(tool_registry):
         name="tool1",
         description="Tool1",
         parameters={},
+        director=MagicMock(),
     )
     tool2 = OpenAPITool(
         MagicMock(),
@@ -147,6 +150,7 @@ def test_get_category_subcategories(tool_registry):
         name="tool2",
         description="Tool2",
         parameters={},
+        director=MagicMock(),
     )
     tool_registry.register_tool(
         category="cat1", subcategory="sub1", tool_name="tool1", tool=tool1
@@ -171,6 +175,7 @@ def test_toggle_tools(tool_registry):
         name="tool1",
         description="Tool1",
         parameters={},
+        director=MagicMock(),
     )
     tool2 = OpenAPITool(
         MagicMock(),
@@ -178,6 +183,7 @@ def test_toggle_tools(tool_registry):
         name="tool2",
         description="Tool2",
         parameters={},
+        director=MagicMock(),
     )
 
     tool_registry.register_tool(
@@ -217,6 +223,7 @@ def test_clear(tool_registry):
         name="test",
         description="Test",
         parameters={},
+        director=MagicMock(),
     )
     tool_registry.register_tool(
         category="cat", subcategory="sub", tool_name="test", tool=tool
